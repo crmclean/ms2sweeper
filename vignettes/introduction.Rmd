@@ -7,7 +7,7 @@ vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
----
+---use
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
