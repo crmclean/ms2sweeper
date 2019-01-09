@@ -7,6 +7,7 @@ Maintainer: Craig McLean <Craigmclean23@gmail.com>
 Description: This package is designed to select and clean MS2 spectra from mass spec data. 
 License: MIT License  
 Encoding: UTF-8
+Depends: R (>= 2.14.0)
 LazyData: true
 Imports:
     mzR,
