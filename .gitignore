@@ -30,3 +30,4 @@ unsrturl.bst
 *.tm_properties
 inst/doc
 tests/*
+.Rproj.user
