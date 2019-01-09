@@ -1,3 +1,12 @@
 language: r
 bioc_check: true
 use_bioc: true
+
+bioc_packages:
+   - Biobase
+   - BiocGenerics
+   - MSnbase
+   - mzR
+   - ProtGenerics
+   - S4Vectors
+   - xcms
