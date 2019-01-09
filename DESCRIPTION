@@ -1,8 +1,8 @@
 Package: ms2sweeper
 Type: Package
-Title: Returns cleaned MS2 spectra for matching m/z rt features whenever available.
-Version: 0.1.0
-Author: Craig McLean 
+Title: Finding and Retreiving Best Posible MS2 Spectra. 
+Version: 0.99.0
+Author: Craig McLean <craigmclean23@gmail.com> 
 Maintainer: Craig McLean <Craigmclean23@gmail.com> 
 Description: This package is designed to select and clean MS2 spectra from mass spec data. 
 License: MIT License  
@@ -23,4 +23,6 @@ Imports:
 RoxygenNote: 6.0.1
 Suggests: knitr,
     rmarkdown
+URL: https://github.com/crmclean/ms2sweeper
+BugReports: https://github.com/crmclean/ms2sweeper/issues
 VignetteBuilder: knitr
