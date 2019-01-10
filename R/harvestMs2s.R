@@ -6,24 +6,24 @@
 #' correction of the MS2s if a 13C peak is detected within the parent ion's
 #' scan.
 #'
-#'  @param sweeperObj - object containing all MS2 data that will be mined.
-#'  @param rtError - Time window to check for matches in rt betwee parent ions
-#'  from XCMS and those from the MS2 fragment table.
-#'  @param ppm - Error window for features.
-#'  @param isoWindow - isolation window for MS2s
-#'  @param scanInterval - Dynamic exclusion time. Usefull when matching MS2s
-#'  @param clearData - Boolean. Deletes raw data from sweepersObj. Good to
-#'  reduce amount of memory taken up by sweeperObj.
-#'  @param mzDiff - mz error window used to group peaks from spectra together.
-#'  that belong to the same features but come in different scans.
-#'  @param cores - number of cores to use during harvest function.
+#' @param sweeperObj - object containing all MS2 data that will be mined.
+#' @param rtError - Time window to check for matches in rt betwee parent ions
+#' from XCMS and those from the MS2 fragment table.
+#' @param ppm - Error window for features.
+#' @param isoWindow - isolation window for MS2s
+#' @param scanInterval - Dynamic exclusion time. Usefull when matching MS2s
+#' @param clearData - Boolean. Deletes raw data from sweepersObj. Good to
+#' reduce amount of memory taken up by sweeperObj.
+#' @param mzDiff - mz error window used to group peaks from spectra together.
+#' that belong to the same features but come in different scans.
+#' @param cores - number of cores to use during harvest function.
 #'
-#'  @importFrom foreach "%dopar%"
+#' @importFrom foreach "%dopar%"
+#' @importFrom dplyr "%>%"
 #'
-#'  @return sweeperObj with slots for parents and daughters filled.
-#'  @export
-harvestMS2 <- function(sweeperObj, ppm = 5,
-                       rtError = 15,
+#' @return sweeperObj with slots for parents and daughters filled.
+#' @export
+harvestMS2 <- function(sweeperObj, ppm = 5, rtError = 15,
                        isoWindow = 2,
                        scanInterval = 7,
                        cores = 3,
@@ -139,7 +139,7 @@ harvestMS2 <- function(sweeperObj, ppm = 5,
                     unique()
                 parents[[k]] <- purityTable[parentMatches %in% parentsIds] %>%
                     Reduce(rbind,.) %>%
-                    mutate(family, has13C = NULL)
+                    dplyr::mutate(family, has13C = NULL)
                 daughters[[k]] <- mergedMS2s[[k]] %>% dplyr::mutate(family)
                 family <- family + 1
 

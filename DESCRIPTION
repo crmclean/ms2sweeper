@@ -1,16 +1,21 @@
 Package: ms2sweeper
 Type: Package
-Title: Finding and Retreiving Best Posible MS2 Spectra. 
+Title: Finding and Retreiving Best Posible MS2 Spectra
 Version: 0.99.0
 Author: Craig McLean <craigmclean23@gmail.com> 
 Maintainer: Craig McLean <Craigmclean23@gmail.com> 
 Description: This package is designed to select and clean MS2 spectra from mass spec data. 
-License: MIT License  
-Depends: R (>= 3.2), methods, BiocGenerics(>= 0.7.1), Biobase(>= 2.15.2), mzR(>= 2.15.1), S4Vectors, ProtGenerics(>= 1.9.1)
+License: MIT + file LICENSE
+Depends: R (>= 3.2)
 Encoding: UTF-8
 LazyData: true
 Imports:
-    mzR,
+    methods,
+    BiocGenerics(>= 0.7.1),
+    Biobase(>= 2.15.2), 
+    mzR(>= 2.15.1), 
+    S4Vectors, 
+    ProtGenerics(>= 1.9.1),
     xcms,
     doParallel,
     foreach,
@@ -20,8 +25,11 @@ Imports:
     reshape2,
     MSnbase,
     devtools,
-    ncdf4
-RoxygenNote: 6.0.1
+    ncdf4,
+    stats,
+    doMC,
+    rlang
+RoxygenNote: 6.1.1
 Suggests: knitr,
     rmarkdown
 URL: https://github.com/crmclean/ms2sweeper

@@ -6,6 +6,9 @@
 \usage{
 ms2Info(MSn_dt)
 }
+\arguments{
+\item{MSn_dt}{- list of tables containing all fragments observed}
+}
 \description{
 This function is used to subset entered peak table for all fragments into only values
 related to MS2 observations.

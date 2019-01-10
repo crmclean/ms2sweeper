@@ -10,6 +10,8 @@
 #' current feature being investigated and a sample. It shoud return indicies of
 #' features that are within the allowed error.
 #'
+#' @importFrom dplyr %>%
+#'
 #' @return a vector of matching indicies.
 filterFragments <- function(curMz, curRt, sampleData, ppm, rtError) {
 

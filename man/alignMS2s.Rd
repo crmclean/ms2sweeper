@@ -4,8 +4,8 @@
 \alias{alignMS2s}
 \title{alignMS2s}
 \usage{
-alignMS2s(sweeperObj, ppm = 5, betweenSampThesh = 0.05, poisThresh = 0.05,
-  cores = 1, mzDiff = 0.15)
+alignMS2s(sweeperObj, ppm = 5, betweenSampThresh = 0.05,
+  poisThresh = 0.05, cores = 1, mzDiff = 0.15)
 }
 \arguments{
 \item{sweeperObj}{- sweeper object containing ms2 data for each matched
@@ -14,13 +14,16 @@ feature per sample}
 \item{ppm}{- ppm error to check for similarities between parent ions across
 samples.}
 
+\item{betweenSampThresh}{- minimum p probability value required to retain a
+peak during across sample comparison.}
+
 \item{poisThresh}{- minimum p value required to retaion a peak during
 modeling of occurance frequencies.}
 
 \item{cores}{- number of cores running the algorithm.}
 
-\item{betweenSampThresh}{- minimum p probability value required to retain a
-peak during across sample comparison.}
+\item{mzDiff}{- absolute mass difference required to group common peaks of
+across distinct ms2 scans.}
 }
 \value{
 the sweeper object with the pureMS2 slot filled.

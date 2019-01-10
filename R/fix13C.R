@@ -5,17 +5,20 @@
 #'
 #' @param ms2Table - ms2 spectra table being checked for 13C peaks.
 #'
+#' @importFrom dplyr "%>%"
+#'
 #' @return A ms2 spectra table corrected for 13C peaks.
 fix13C <- function(ms2Table) {
 
     ms2Table$index <- 1:nrow(ms2Table)
 
     ## checking for presence of c13 peaks
-    peakDistance <- dist(ms2Table$ms2mz) %>%
+    peakDistance <- stats::dist(ms2Table$ms2mz) %>%
         as.matrix()
     peakDistance[lower.tri(peakDistance, diag = TRUE)] <- 0
-    peakDistance <- subset(reshape2::melt(peakDistance), value > 0) %>%
-        .[order(.$Var1),]
+    peakDistance <- reshape2::melt(peakDistance)
+    peakDistance <- peakDistance[peakDistance$value > 0,]
+    peakDistance <- peakDistance[order(peakDistance$Var1),]
 
     ### I SHOULD CHANGE THIS LATER TO BE AN IMPUT VALUE
     pairCheck <- peakDistance$value < 1.3

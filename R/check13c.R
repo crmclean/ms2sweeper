@@ -9,6 +9,7 @@
 #' combines the purity. The new table tells us if we need to fix the ms2 should
 #' be corrected for contamination.
 #'
+#' @importFrom dplyr %>%
 #' @return The windowData table with an additional column used to indicate
 #' if the data has a 13C peak that could be contamination the ms2 scan.
 check13c <- function(windowData, ppm) {

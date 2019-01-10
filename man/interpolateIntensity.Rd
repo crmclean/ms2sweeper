@@ -4,7 +4,14 @@
 \alias{interpolateIntensity}
 \title{interpolateIntensity}
 \usage{
-interpolateIntensity(ms2Matches, purityTable, curMs2)
+interpolateIntensity(purityTable)
+}
+\arguments{
+\item{purityTable}{- Table of parent ion features observed over time.}
+}
+\value{
+coefficients from running a regression on the parent ions over
+the time window where the peak is formed.
 }
 \description{
 This funciton is meant to interpolate the proper intensity value for the MS2

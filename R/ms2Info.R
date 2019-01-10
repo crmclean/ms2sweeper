@@ -2,7 +2,8 @@
 #'
 #' @description This function is used to subset entered peak table for all fragments into only values
 #' related to MS2 observations.
-
+#'
+#' @param MSn_dt - list of tables containing all fragments observed
 ms2Info <- function(MSn_dt) {
   ms2Level <- MSn_dt$msLevel == 2
   ms2mz <- MSn_dt$mz[ms2Level]

@@ -15,6 +15,8 @@
 #' @param isoWindow - a measure in dalton of the isolation error from the instrument
 #' @param scanInterval - dynamic exclusion isolation window.
 #'
+#' @importFrom dplyr "%>%"
+#'
 #' @return List of parent m/z matches over time for each feature along with their purity.
 parentPurity <- function(sampleData,
                          curMz,
@@ -71,10 +73,9 @@ parentPurity <- function(sampleData,
             windowData <- data.frame(mzs = curScanMzs[checkPeaks],
                                    intensity = curScanIntensities[checkPeaks])
 
-            windowData <- windowData[order(windowData$intensity, decreasing = T),] %>%
-                dplyr::mutate(purity = intensity/sum(intensity)) %>%
-                dplyr::filter(purity > 0.01)
-
+            windowData <- windowData[order(windowData$intensity, decreasing = T),]
+            windowData$purity <- windowData$intensity/sum(windowData$intensity)
+            windowData <- windowData[windowData$purity > 0.01,]
 
             ## This function would remove C13 peak from the parent ion in the data
             ## and it would integrate the purity values.

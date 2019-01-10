@@ -19,9 +19,14 @@ specific features from ms2 data.}
 
 \item{\code{ms2Data}}{- The read in ms2 data.}
 
-\item{\code{ms2Harvest}}{- Harvested ms2 data for all inputed parent ions from
+\item{\code{harvestDaughters}}{- Harvested ms2 data for all inputed parent ions from
 features.}
 
+\item{\code{harvestParents}}{- Harvested parent ions corresponding to matched MS2
+spectra.}
+
 \item{\code{ms2Pure}}{- list of purified ms2s based on the cleaning criterion.}
+
+\item{\code{outputPath}}{- Path to save text files for individual MS2 spectra.}
 }}
 

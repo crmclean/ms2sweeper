@@ -1,4 +1,4 @@
-#' @title sweeperObj
+#' sweeperObj
 #'
 #' @description This object is a generic object designed to run the different
 #' functions of the ms2sweeper package. The slots represent content or data
@@ -8,9 +8,12 @@
 #' specific features from ms2 data.
 #' @slot ms2Path - A string vector of paths to the ms2 raw data files.
 #' @slot ms2Data - The read in ms2 data.
-#' @slot ms2Harvest - Harvested ms2 data for all inputed parent ions from
+#' @slot harvestDaughters - Harvested ms2 data for all inputed parent ions from
 #' features.
+#' @slot harvestParents - Harvested parent ions corresponding to matched MS2
+#' spectra.
 #' @slot ms2Pure - list of purified ms2s based on the cleaning criterion.
+#' @slot outputPath - Path to save text files for individual MS2 spectra.
 #'
 #' @export
 setClass(
@@ -29,7 +32,23 @@ setClass(
     )
 )
 
-#' @export
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
+
+
+#' @description This method updates an \code{\linkS4class{sweeperObj}}
+#'     object to the latest definition.
+#'
+#' @title Update an \code{\linkS4class{sweeperObj}} object
+#'
+#' @param .Object - the \code{\linkS4class{sweeperObj}} object to update.
+#' @param features - a two column data.frame containing features to be
+#' screened for MS2s.
+#' @param ms2Path - file path the raw MS2 data.
+#'
+#' @return An updated \code{\linkS4class{sweeperObj}} containing all data from
+#' the input object.
+#'
+#' @author Craig McLean
 setMethod(
 
     f="initialize",
@@ -54,16 +73,18 @@ setMethod(
     }
 )
 
+#' @title createSweeper
+#'
+#' @description This function will create a sweeperObj used to extract ms2s.
+#'
+#' @param features - two column data.frame representing m/z and rt values of
+#' individual features to be screened for MS2 spectra.
+#' @param ms2Path - path to raw ms2 data.
 createSweeper <- function(features, ms2Path) {
-    sweeperObj <- new(Class="sweeperObj", features, ms2Path)
+    sweeperObj <- methods::new(Class="sweeperObj", features, ms2Path)
     return(sweeperObj)
 }
 
-#' @title get_set
-#'
-#' @description This file contains the getter and setter functions used to
-#' access slots from sweeperObj object.
-#'
 # Get Functions -----------------------------------------------------------
 getFreatures <- function(sweeperObj) {
     return(sweeperObj@features)

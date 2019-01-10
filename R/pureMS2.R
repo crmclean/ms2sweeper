@@ -7,6 +7,8 @@
 #' within the error of the input curMz and curRt values.
 #' @param mzDiff - absolute mz error required match spectra across scans.
 #'
+#' @importFrom dplyr "%>%"
+#'
 #' @return a list of tables making up the linked scans within a sample.
 pureMS2 <- function(ms2Matches, mzDiff) {
 
@@ -150,25 +152,25 @@ pureMS2 <- function(ms2Matches, mzDiff) {
 
             multObs <- groupedSpectra[groupedSpectra$groupIndex >0,]
             noMatch <- groupedSpectra[groupedSpectra$groupIndex == 0,]
-            mergedData <- multObs %>% group_by(groupIndex) %>%
-                summarize(parent = paste(unique(parent), collapse = ";"),
-                          mzMean = mean(ms2mz),
-                          mzSd = sd(ms2mz),
-                          intMean = mean(ms2int),
-                          intSd = sd(ms2int),
-                          rtMean = mean(ms2rt),
-                          rtMin = min(ms2rt),
-                          rtMax = max(ms2rt),
-                          slope = coef(lm(ms2int~ms2rt))[2],
-                          size = length(ms2int),
-                          firstScan = min(id),
-                          lastScan = max(id),
-                          sample = unique(ms2Samp)) %>%
-                mutate(groupIndex = NULL) %>%
+            mergedData <- multObs %>% dplyr::group_by(.data$groupIndex) %>%
+                dplyr::summarize(parent = paste(unique(.data$parent), collapse = ";"),
+                          mzMean = mean(.data$ms2mz),
+                          mzSd = sd(.data$ms2mz),
+                          intMean = mean(.data$ms2int),
+                          intSd = sd(.data$ms2int),
+                          rtMean = mean(.data$ms2rt),
+                          rtMin = min(.data$ms2rt),
+                          rtMax = max(.data$ms2rt),
+                          slope = stats::coef(stats::lm(.data$ms2int~.data$ms2rt))[2],
+                          size = length(.data$ms2int),
+                          firstScan = min(.data$id),
+                          lastScan = max(.data$id),
+                          sample = unique(.data$ms2Samp)) %>%
+                dplyr::mutate(groupIndex = NULL) %>%
                 data.frame()
 
             noMatch <- returnCurScan(noMatch,noMatch$id) %>%
-                mutate(groupIndex = NULL)
+                dplyr::mutate(groupIndex = NULL)
             linkedScans[[i]] <- rbind(mergedData, noMatch)
 
         } else {

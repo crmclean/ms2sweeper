@@ -13,12 +13,16 @@
 #' @param poisThresh - minimum p value required to retaion a peak during
 #' modeling of occurance frequencies.
 #' @param cores - number of cores running the algorithm.
+#' @param mzDiff - absolute mass difference required to group common peaks of
+#' across distinct ms2 scans.
 #'
 #' @importFrom foreach "%dopar%"
+#' @importFrom dplyr "%>%"
+#' @importFrom stats "sd"
 #'
 #' @return the sweeper object with the pureMS2 slot filled.
 #' @export
-alignMS2s <- function(sweeperObj, ppm = 5, betweenSampThesh = 0.05,
+alignMS2s <- function(sweeperObj, ppm = 5, betweenSampThresh = 0.05,
                       poisThresh = 0.05, cores = 1, mzDiff = 0.15) {
 
     parents <- getHarvestParents(sweeperObj)
@@ -105,20 +109,20 @@ alignMS2s <- function(sweeperObj, ppm = 5, betweenSampThesh = 0.05,
                 keepPeaks <- parents %>%
                     sapply(function(x) {
                         sum(parProbs[as.numeric(x)])
-                    }) > betweenSampThesh
+                    }) > betweenSampThresh
 
                 curMS2 <- curMS2[keepPeaks,]
             } else {
                 uniqueParents <- curMS2$parent %>% unique()
             }
 
-            keepPois <- ppois(curMS2$size, mean(curMS2$size)) > poisThresh
+            keepPois <- stats::ppois(curMS2$size, mean(curMS2$size)) > poisThresh
             curMS2 <- curMS2[keepPois,]
 
             curMS2$parentMz <- mean(parMz[uniqueParents])
-            curMS2$parentMzSd <- sd(parMz[uniqueParents])
+            curMS2$parentMzSd <- stats::sd(parMz[uniqueParents])
             curMS2$parentRt <- mean(parRt[uniqueParents])
-            curMS2$parentRtSd <- sd(parRt[uniqueParents])
+            curMS2$parentRtSd <- stats::sd(parRt[uniqueParents])
 
             storeMS2s[[ms2Counter]] <- curMS2
             ms2Counter <- ms2Counter + 1

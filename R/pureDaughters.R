@@ -3,6 +3,15 @@
 #' @description This function works the same as the pureMS2 function, but is
 #' slightly different for matching spectra across samples. This only means
 #' that it has a few more error messages.
+#'
+#' @param ms2Matches - a list of all ms2 matches that belong to features
+#' within the error of the input curMz and curRt values.
+#' @param mzDiff - absolute mz error required match spectra across scans.
+#'
+#' @importFrom dplyr "%>%"
+#' @importFrom rlang .data
+#'
+#' @return a list of tables making up the linked scans within a sample.
 pureDaughters <- function(ms2Matches, mzDiff) {
 
     # Merging Scans by Similarity ---------------------------------------------
@@ -80,8 +89,8 @@ pureDaughters <- function(ms2Matches, mzDiff) {
 
             combinedSpectra <- curMs2Group[curMs2Group$groupIndex %in% checkGroups,]
             groupedMzs <- combinedSpectra %>%
-                group_by(groupIndex) %>%
-                summarise(mzMean = mean(mzMean)) %>%
+                dplyr::group_by(.data$groupIndex) %>%
+                dplyr::summarise(mzMean = mean(.data$mzMean)) %>%
                 data.frame()
             groupedMzs <- groupedMzs$mzMean
 
@@ -161,20 +170,21 @@ pureDaughters <- function(ms2Matches, mzDiff) {
             multObs <- groupedSpectra[groupedSpectra$groupIndex >0, ]
             noMatch <- groupedSpectra[groupedSpectra$groupIndex == 0,]
             mergedData <- multObs %>%
-                dplyr::group_by(groupIndex) %>%
-                dplyr::summarize(parent = paste(unique(id), collapse = ";"),
-                          mzMeanDau = mean(mzMean),
-                          mzSdDau = sd(mzMean),
-                          mzSdErr = sd(mzSd),
-                          intMeanDau = mean(intMean),
-                          intSdDau = sd(intMean),
-                          intErrSd = sd(intSd),
-                          rtMean = mean(rtMean),
-                          rtMin = min(rtMin),
-                          rtMax = max(rtMax),
-                          slopeMean = mean(slope),
-                          slopeSd = sd(slope),
-                          size = sum(size)) %>%
+                dplyr::group_by(.data$groupIndex) %>%
+                dplyr::summarize(parent = paste(unique(.data$id),
+                                                collapse = ";"),
+                          mzMeanDau = mean(.data$mzMean),
+                          mzSdDau = sd(.data$mzMean),
+                          mzSdErr = sd(.data$mzSd),
+                          intMeanDau = mean(.data$intMean),
+                          intSdDau = sd(.data$intMean),
+                          intErrSd = sd(.data$intSd),
+                          rtMean = mean(.data$rtMean),
+                          rtMin = min(.data$rtMin),
+                          rtMax = max(.data$rtMax),
+                          slopeMean = mean(.data$slope),
+                          slopeSd = sd(.data$slope),
+                          size = sum(.data$size)) %>%
                 dplyr::mutate(groupIndex = NULL) %>%
                 data.frame()
 
