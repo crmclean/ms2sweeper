@@ -16,7 +16,6 @@
 #' @param scanInterval - dynamic exclusion isolation window.
 #'
 #' @return List of parent m/z matches over time for each feature along with their purity.
-#' @export
 parentPurity <- function(sampleData,
                          curMz,
                          parentMatches,

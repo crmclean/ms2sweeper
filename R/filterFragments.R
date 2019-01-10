@@ -11,7 +11,6 @@
 #' features that are within the allowed error.
 #'
 #' @return a vector of matching indicies.
-#' @export
 filterFragments <- function(curMz, curRt, sampleData, ppm, rtError) {
 
 

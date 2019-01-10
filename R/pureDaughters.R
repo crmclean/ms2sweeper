@@ -1,3 +1,8 @@
+#' @title pureDaughters
+#'
+#' @description This function works the same as the pureMS2 function, but is
+#' slightly different for matching spectra across samples. This only means
+#' that it has a few more error messages.
 pureDaughters <- function(ms2Matches, mzDiff) {
 
     # Merging Scans by Similarity ---------------------------------------------

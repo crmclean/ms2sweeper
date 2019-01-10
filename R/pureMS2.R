@@ -8,7 +8,6 @@
 #' @param mzDiff - absolute mz error required match spectra across scans.
 #'
 #' @return a list of tables making up the linked scans within a sample.
-#' @export
 pureMS2 <- function(ms2Matches, mzDiff) {
 
     ### some storage device

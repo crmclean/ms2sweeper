@@ -11,7 +11,6 @@
 #'
 #' @return The windowData table with an additional column used to indicate
 #' if the data has a 13C peak that could be contamination the ms2 scan.
-#' @export
 check13c <- function(windowData, ppm) {
 
     windowData$has13C <- F

@@ -6,7 +6,6 @@
 #' @param ms2Table - ms2 spectra table being checked for 13C peaks.
 #'
 #' @return A ms2 spectra table corrected for 13C peaks.
-#' @export
 fix13C <- function(ms2Table) {
 
     ms2Table$index <- 1:nrow(ms2Table)

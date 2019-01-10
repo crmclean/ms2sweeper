@@ -11,6 +11,8 @@
 #' @slot ms2Harvest - Harvested ms2 data for all inputed parent ions from
 #' features.
 #' @slot ms2Pure - list of purified ms2s based on the cleaning criterion.
+#'
+#' @export
 setClass(
     Class = "sweeperObj",
 
@@ -27,6 +29,7 @@ setClass(
     )
 )
 
+#' @export
 setMethod(
 
     f="initialize",
@@ -61,7 +64,6 @@ createSweeper <- function(features, ms2Path) {
 #' @description This file contains the getter and setter functions used to
 #' access slots from sweeperObj object.
 #'
-#' @export
 # Get Functions -----------------------------------------------------------
 getFreatures <- function(sweeperObj) {
     return(sweeperObj@features)
