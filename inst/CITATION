@@ -1,0 +1,13 @@
+citHeader("To cite the ms2sweeper package in publications please use both of the",
+   "following:")
+
+citEntry(entry="misc",
+   author=c(
+   person(c("C"), "McLean"),
+   title="ms2swepper - generating most reproducible ms2 spectra across samples"
+   samples for molecular discovery",
+   url="https://github.com/crmclean/ms2sweeper",
+   textVersion = paste("McLean, C. 2019.",
+                       "ms2swepper - generating most reproducible ms2 spectra",
+                       "across samples. R package version 0.99.0;"))
+
