@@ -1,7 +1,6 @@
 ^.*\.Rproj$
+^inst/CITATION
 ^\.Rproj\.user$
 ^README.md
 ^.travis.yml
 ^docs/*
-^NEWS
-^inst/*

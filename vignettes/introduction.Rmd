@@ -7,7 +7,7 @@ vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
----use
+---
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
@@ -16,50 +16,28 @@ knitr::opts_chunk$set(
 )
 ```
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+# Introduction
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+ms2sweeper is an R package designed to find and retreive ms/ms spectra within 
+whenever available for a given feature for the analysis of metabolomics data. 
+If multiple scans for a single are available, the program does its best to 
+return the cleanest possible spectra. Through the cleaning processes, noise 
+peaks are removed. 
 
-## Vignette Info
+# Installation
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+To install this package, please type the following command into the R console:
 
-## Styles
-
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
-
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
-
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+```{r}
+devtools::install_github("crmclean/ms2sweeper")
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
+The installation will hopefully be acccessible through other servers in the 
+future. 
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
+# Tutorial
 
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+```{r}
 
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
 ```
 
-Also a quote using `>`:
-
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
