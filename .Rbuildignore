@@ -1,6 +1,8 @@
 ^.*\.Rproj$
+^bin/*
 ^inst/CITATION
 ^\.Rproj\.user$
 ^README.md
 ^.travis.yml
 ^docs/*
+^Results/*

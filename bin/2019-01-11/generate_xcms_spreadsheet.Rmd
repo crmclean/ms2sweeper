@@ -1,0 +1,76 @@
+---
+title: "Generating XCMS feature Table"
+author: "Craig McLean"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+---
+
+# Overview
+
+This file was used to generate a feature table of peaks from the faahKO data
+set available through the faahKO package in bioconductor.
+
+The feature table output from this analysis was used to generate the test ms2
+feature table used within the vignette of this package.
+
+# Code 
+
+```{r}
+library(xcms)
+library(faahKO)
+library(RColorBrewer)
+library(pander)
+library(magrittr)
+
+## Get the full path to the CDF files
+cdfs <- dir(system.file("cdf", package = "faahKO"), full.names = TRUE,
+            recursive = TRUE)
+## Create a phenodata data.frame
+pd <- data.frame(sample_name = sub(basename(cdfs), pattern = ".CDF",
+                                   replacement = "", fixed = TRUE),
+                 sample_group = c(rep("KO", 6), rep("WT", 6)),
+                 stringsAsFactors = FALSE)
+```
+
+
+```{r}
+raw_data <- readMSData(files = cdfs, pdata = new("NAnnotatedDataFrame", pd),
+                       mode = "onDisk")
+cwp <- CentWaveParam(peakwidth = c(20, 80), noise = 5000)
+xdata <- findChromPeaks(raw_data, param = cwp)
+
+xdata <- adjustRtime(xdata, param = ObiwarpParam(binSize = 0.6))
+xdata <- dropAdjustedRtime(xdata)
+
+## Does the object have adjusted retention times?
+hasAdjustedRtime(xdata)
+
+pdp <- PeakDensityParam(sampleGroups = xdata$sample_group,
+                        minFraction = 0.8)
+xdata <- groupChromPeaks(xdata, param = pdp)
+
+## Now the retention time correction.
+pgp <- PeakGroupsParam(minFraction = 0.85)
+
+## Get the peak groups that would be used for alignment.
+xdata <- adjustRtime(xdata, param = pgp)
+
+pdp <- PeakDensityParam(sampleGroups = xdata$sample_group,
+                        minFraction = 0.4, bw = 30)
+
+pdp <- PeakDensityParam(sampleGroups = xdata$sample_group,
+                        minFraction = 0.4, bw = 20)
+xdata <- groupChromPeaks(xdata, param = pdp)
+
+
+xdata <- fillChromPeaks(xdata)
+xset <- as(xdata, "xcmsSet")
+output <- peakTable(xset)
+mummichogOut <- data.frame("m/z" = output$mz, 
+                           "retention_time" = output$rt,
+                           "p-value" = 0.05,
+                           "t-score" = 1)
+write.table(mummichogOut,
+            file = here::here("Results/2019-01-11/faahko_mummichog_out.txt"), 
+            row.names = F)
+```

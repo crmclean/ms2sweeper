@@ -1,4 +1,5 @@
 *.renviron
+data/*
 *.rprofile
 *.rproj
 *.rproj.user

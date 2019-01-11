@@ -1,0 +1,35 @@
+---
+title: "Process Mummichog"
+author: "Craig McLean"
+date: "1/11/2019"
+output: html_document
+---
+
+This file was generated to process the output of mummichog to find all unique 
+mz/rt features that have some kind of exact mass matches to kegg. 
+
+```{r}
+mummichogIn <- read.csv(here::here("data/faahko_kegg_cps_out.csv"))
+uniqueMummyMasses <- mummichogIn[!duplicated(mummichogIn$Query.Mass),]
+
+storeMatches <- list()
+for(i in seq_along(uniqueMummyMasses$Query.Mass)) {
+    match <- abs(mummichogOut$m.z - uniqueMummyMasses$Query.Mass[i])/
+        uniqueMummyMasses$Query.Mass[i] * 10^6 < 20
+    storeMatches[[i]] <- which(match)
+}
+
+featureRts <- lapply(storeMatches, function(x) {
+    mummichogOut$retention_time[x]
+})
+
+storeMatches <- list()
+for(i in seq_along(featureRts)) {
+    storeMatches[[i]] <- cbind(mzs = uniqueMummyMasses$Query.Mass[i], rts = featureRts[[i]])
+}
+
+storeMatches <- Reduce(f = rbind, x = storeMatches)
+write.table(x = storeMatches, file = here::here("data/checkMS2s.txt"), row.names = F)
+```
+
+
