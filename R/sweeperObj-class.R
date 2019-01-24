@@ -80,6 +80,8 @@ setMethod(
 #' @param features - two column data.frame representing m/z and rt values of
 #' individual features to be screened for MS2 spectra.
 #' @param ms2Path - path to raw ms2 data.
+#'
+#' @export
 createSweeper <- function(features, ms2Path) {
     sweeperObj <- methods::new(Class="sweeperObj", features, ms2Path)
     return(sweeperObj)

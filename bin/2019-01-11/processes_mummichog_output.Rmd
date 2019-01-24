@@ -9,7 +9,7 @@ This file was generated to process the output of mummichog to find all unique
 mz/rt features that have some kind of exact mass matches to kegg. 
 
 ```{r}
-mummichogIn <- read.csv(here::here("data/faahko_kegg_cps_out.csv"))
+mummichogIn <- read.csv(here::here("data/faahko_post_mummichog.csv"))
 uniqueMummyMasses <- mummichogIn[!duplicated(mummichogIn$Query.Mass),]
 
 storeMatches <- list()

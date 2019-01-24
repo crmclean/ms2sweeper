@@ -30,6 +30,7 @@ To install this package, please type the following command into the R console:
 
 ```{r}
 devtools::install_github("crmclean/ms2sweeper")
+lobDB <- read.csv(here::here("data/lob_db_pos.csv"))
 ```
 
 The installation will hopefully be acccessible through other servers in the 
@@ -37,7 +38,52 @@ future.
 
 # Tutorial
 
-```{r}
+Loading packages required for the tutorial.
 
+```{r}
+ms2Files <- list.files(pattern = ".mzXML")
+frags <- list()
+for(i in 1:length(ms2Files)) {
+
+    suppressMessages(theFragments <- suppressMessages(xcms::xcmsSet(ms2Files[i],
+                                                                    method="MS1") %>%
+                                                          xcms::xcmsFragments()))
+    frags[[i]] <- as.data.frame(theFragments@peaks)
+}
+
+```
+
+```{r}
+temp <- data.frame(frags[[6]])
+temp$msLevel %>% unique()
+```
+
+
+```{r}
+path <- "~/Desktop/forCraigPooledNegInternalMetabolitesEnvironmental/"
+ms2Files <- list.files(path, pattern = ".mzML")
+frags <- list()
+for(i in 1:length(ms2Files)) {
+
+    suppressMessages(theFragments <- suppressMessages(xcms::xcmsSet(file.path(path, ms2Files[i]),
+                                                                    method="MS1") %>%
+                                                          xcms::xcmsFragments()))
+    frags[[i]] <- theFragments@peaks
+}
+```
+
+Loading content needed to check for MS2 data.
+
+```{r}
+lobDB$mz
+frags[[2]][frags[[2]]$msLevel == 1,] %>% View()
+```
+
+ms2sweeper requires that the columns for exact mass and retention time for each
+feature be labeled as mz and rt respectively. 
+
+```{r}
+colnames(checkFeatures) <- c("mz", "rt") 
+ms2sweeper::createSweeper(checkFeatures, files)
 ```
 

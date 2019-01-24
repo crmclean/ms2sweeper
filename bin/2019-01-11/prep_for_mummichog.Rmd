@@ -1,0 +1,18 @@
+---
+title: "Prep data for mummichog"
+author: "Craig McLean"
+date: "1/11/2019"
+output: html_document
+---
+
+The goal of this file is to generate a text file for the T pseudonana 
+paper that can be run through mummichog.
+
+```{r}
+t_pseudo <- read.csv(here::here("data/t_pseudonana_xcms.csv"))
+mummichogOut <- data.frame("m/z" = t_pseudo$mass_to_charge, 
+           "rt" = t_pseudo$retention_time, 
+           "p-value" = 0.05, "t-score" = 1)
+write.table(x = mummichogOut, file = here::here("data/t_pseudonana_mummichog_in.txt"))
+```
+
