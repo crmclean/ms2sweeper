@@ -16,6 +16,6 @@ within the error of the input curMz and curRt values.}
 a list of tables making up the linked scans within a sample.
 }
 \description{
-This function is designed to return a high confidence MS2 table. It mataches features
-that are found within two tables.
+This function is designed to return a high confidence MS2 table.
+It mataches features that are found within two tables.
 }

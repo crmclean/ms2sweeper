@@ -21,21 +21,14 @@ pureDaughters <- function(ms2Matches, mzDiff) {
     nextExist <- T
     uniqueMS2 <- 1
     scanGroups <- list()
-    while(nextExist) {
+    while(nextExist & length(ms2Matches) >= i) {
 
         # initializing scans, and checking for next -------------------------------
         curScan <- ms2Matches[[i]]
         curScan$curGroup <- 0
         curScan$id <- i
         curScan$parent <- names(ms2Matches)[i]
-        if(length(ms2Matches) == i) {
-
-            curScan$curGroup <- uniqueMS2
-            linkedScans[[uniqueMS2]] <- curScan
-            nextExist <- F
-            next
-
-        } else if(i == 1) {
+        if(i == 1) {
 
             curScan$curGroup <- uniqueMS2
             linkedScans[[uniqueMS2]] <- curScan
@@ -151,15 +144,14 @@ pureDaughters <- function(ms2Matches, mzDiff) {
             }
 
         }
+
     }
 
     # Returning Clean scans ---------------------------------------------------
     ## I need some column connecting the scans to the parent
     matchScanCount <- linkedScans %>% sapply(function(x) {length(unique(x$id))})
-    for(i in seq_along(matchScanCount)) {
+    for(i in seq_along(linkedScans)) {
 
-
-        ## debug some error here...
         if(matchScanCount[i] > 1) {
 
             groupedSpectra <- groupSpectra(linkedScans[[i]],
@@ -173,18 +165,18 @@ pureDaughters <- function(ms2Matches, mzDiff) {
                 dplyr::group_by(.data$groupIndex) %>%
                 dplyr::summarize(parent = paste(unique(.data$id),
                                                 collapse = ";"),
-                          mzMeanDau = mean(.data$mzMean),
-                          mzSdDau = sd(.data$mzMean),
-                          mzSdErr = sd(.data$mzSd),
-                          intMeanDau = mean(.data$intMean),
-                          intSdDau = sd(.data$intMean),
-                          intErrSd = sd(.data$intSd),
-                          rtMean = mean(.data$rtMean),
-                          rtMin = min(.data$rtMin),
-                          rtMax = max(.data$rtMax),
-                          slopeMean = mean(.data$slope),
-                          slopeSd = sd(.data$slope),
-                          size = sum(.data$size)) %>%
+                                 mzMeanDau = mean(.data$mzMean),
+                                 mzSdDau = sd(.data$mzMean),
+                                 mzSdErr = sd(.data$mzSd),
+                                 intMeanDau = mean(.data$intMean),
+                                 intSdDau = sd(.data$intMean),
+                                 intErrSd = sd(.data$intSd),
+                                 rtMean = mean(.data$rtMean),
+                                 rtMin = min(.data$rtMin),
+                                 rtMax = max(.data$rtMax),
+                                 slopeMean = mean(.data$slope),
+                                 slopeSd = sd(.data$slope),
+                                 size = sum(.data$size)) %>%
                 dplyr::mutate(groupIndex = NULL) %>%
                 data.frame()
 

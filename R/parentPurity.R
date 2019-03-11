@@ -13,7 +13,6 @@
 #' @param scanTimes - all scans (rts) from sample raw data
 #' @param ppm - mass error
 #' @param isoWindow - a measure in dalton of the isolation error from the instrument
-#' @param scanInterval - dynamic exclusion isolation window.
 #'
 #' @importFrom dplyr "%>%"
 #'
@@ -25,8 +24,7 @@ parentPurity <- function(sampleData,
                          allIntensities,
                          scanTimes,
                          ppm,
-                         isoWindow,
-                         scanInterval) {
+                         isoWindow) {
 
     parentRts <- sampleData$rt[parentMatches]
     parentIntensities <- sampleData$intensity[parentMatches]
@@ -48,8 +46,7 @@ parentPurity <- function(sampleData,
         rm(parentScan)
 
         matchPoint <- which(names(allMasses) %in% names(checkScans))
-        bounds <- (matchPoint[which.min(matchPoint)] - scanInterval):
-            (matchPoint[which.max(matchPoint)] + scanInterval)
+        bounds <- matchPoint[which.min(matchPoint)]:(matchPoint[which.max(matchPoint)] + 1)
         checkMasses <- allMasses[bounds]
         checkIntensities <- allIntensities[bounds]
 
@@ -94,6 +91,8 @@ parentPurity <- function(sampleData,
 
         purityTable <- purityTable[!sapply(purityTable, is.null)] %>%
             Reduce(rbind, .)
+
+
 
         scansMassSpectra[[curMs2]] <- purityTable
 

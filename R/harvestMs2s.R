@@ -11,7 +11,6 @@
 #' from XCMS and those from the MS2 fragment table.
 #' @param ppm - Error window for features.
 #' @param isoWindow - isolation window for MS2s
-#' @param scanInterval - Dynamic exclusion time. Usefull when matching MS2s
 #' @param clearData - Boolean. Deletes raw data from sweepersObj. Good to
 #' reduce amount of memory taken up by sweeperObj.
 #' @param mzDiff - mz error window used to group peaks from spectra together.
@@ -25,7 +24,6 @@
 #' @export
 harvestMS2 <- function(sweeperObj, ppm = 5, rtError = 15,
                        isoWindow = 2,
-                       scanInterval = 7,
                        cores = 3,
                        clearData = TRUE,
                        mzDiff = 0.5) {
@@ -46,7 +44,9 @@ harvestMS2 <- function(sweeperObj, ppm = 5, rtError = 15,
         curSamp <- allMs2s[[i]]$dataFile[1]
 
         # Loading in file info ----------------------------------------------------
-        rawData <- MSnbase::readMSData(files = curSamp, mode = "onDisk")
+        rawData <- MSnbase::readMSData(files = curSamp,
+                                       mode = "onDisk",
+                                       msLevel. = 1)
         scanTimes <- xcms::rtime(rawData)
         allMasses <- xcms::mz(rawData)
         allIntensities <- xcms::intensity(rawData)
@@ -71,6 +71,7 @@ harvestMS2 <- function(sweeperObj, ppm = 5, rtError = 15,
             }
 
             # filtering data by mz and rt error ---------------------------------------
+            # this only checks against ms1 spectra
             parentMatches <- filterFragments(curMz, curRt,
                                              sampleData = allMs2s[[i]],
                                              ppm, rtError)
@@ -104,8 +105,7 @@ harvestMS2 <- function(sweeperObj, ppm = 5, rtError = 15,
                                         allIntensities,
                                         scanTimes,
                                         ppm,
-                                        isoWindow,
-                                        scanInterval)
+                                        isoWindow)
 
             # this will be null if...
             if(is.null(purityTable)) {
@@ -115,8 +115,9 @@ harvestMS2 <- function(sweeperObj, ppm = 5, rtError = 15,
             ## cleans up MS2s for isotope peaks
             for(k in seq_along(purityTable)) {
 
+                ms2Match <- which(names(ms2Matches) == unique(purityTable[[k]]$parentID))
                 if(any(purityTable[[k]]$has13C)) {
-                    ms2Match <- which(names(ms2Matches) == unique(purityTable[[k]]$parentID))
+
                     if(length(ms2Match) != 1) {
                         next()
                     } else {
@@ -124,6 +125,21 @@ harvestMS2 <- function(sweeperObj, ppm = 5, rtError = 15,
                     }
 
                 }
+
+                lineTermsPurity <- coef(lm(data = purityTable[[k]],
+                                     formula = purity ~ scanTime))
+                scanPurity <- lineTermsPurity[1] +
+                    lineTermsPurity[2] * ms2Matches[[ms2Match]]$ms2rt[1]
+                lineTermsIntensity <- coef(lm(data = purityTable[[k]],
+                                         formula = intensity ~ scanTime))
+                scanIntensity <- lineTermsIntensity[1] +
+                    lineTermsIntensity[2] * ms2Matches[[ms2Match]]$ms2rt[1]
+                purityTable[[k]] <- data.frame(mzs = purityTable[[k]]$mzs[1],
+                           intensity = scanIntensity,
+                           purity = scanPurity,
+                           parentID = purityTable[[k]]$parentID[1],
+                           rt = ms2Matches[[ms2Match]]$ms2rt[1])
+
             }
 
             mergedMS2s <- pureMS2(ms2Matches, mzDiff)

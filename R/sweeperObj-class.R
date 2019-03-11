@@ -62,7 +62,7 @@ setMethod(
         }
 
 
-        .Object <- setFreatures(sweeperObj = .Object, features = features)
+        .Object <- setFeatures(sweeperObj = .Object, features = features)
         .Object <- setMs2Path(sweeperObj = .Object, ms2Path = ms2Path)
 
         cat("~~~ Loading fragment data into R ~~~ \n")
@@ -118,7 +118,7 @@ getMs2Pure <- function(sweeperObj) {
 
 
 # Set Functions -----------------------------------------------------------
-setFreatures <- function(sweeperObj, features) {
+setFeatures <- function(sweeperObj, features) {
 
     if(!is.data.frame(features)) {
         stop("Make sure input to features arguement is a data.frame")
@@ -133,7 +133,7 @@ setFreatures <- function(sweeperObj, features) {
 
     sweeperObj@features <- features
     return(sweeperObj)
-    }
+}
 
 setMs2Path <- function(sweeperObj, ms2Path) {
 
@@ -150,17 +150,16 @@ setMs2Data <- function(sweeperObj) {
     fragmentation_list <- list()
     ms2Files <- getMs2Path(sweeperObj)
     length(fragmentation_list) <- length(ms2Files)
-    for(i in 1:length(ms2Files)) {
-
-        suppressMessages(theFragments <- suppressMessages(xcms::xcmsSet(ms2Files[i],
-                                                                        method="MS1") %>%
-                                                              xcms::xcmsFragments(., snthresh = 1)))
-
-        theFragments <- data.frame(theFragments@peaks) %>%
-            dplyr::mutate(dataFile = ms2Files[i])
-
-        fragmentation_list[[i]] <- theFragments
+    for(i in seq_along(files)) {
+        theFragments <- suppressMessages(xcms::xcmsSet(ms2Files[i],
+                                                            method="MS1") %>%
+                             xcmsFragments(., snthresh = 1))
+        fragmentation_list[[i]] <- data.frame(theFragments@peaks,
+                                              dataFile = ms2Files[i],
+                                              stringsAsFactors = F)
     }
+
+
     sweeperObj@ms2Data <- fragmentation_list
     return(sweeperObj)
 }

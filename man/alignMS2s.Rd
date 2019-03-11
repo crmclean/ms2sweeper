@@ -4,8 +4,8 @@
 \alias{alignMS2s}
 \title{alignMS2s}
 \usage{
-alignMS2s(sweeperObj, ppm = 5, betweenSampThresh = 0.05,
-  poisThresh = 0.05, cores = 1, mzDiff = 0.15)
+alignMS2s(sweeperObj, ppm = 5, betweenSampThresh = 0.15,
+  poisThresh = 0.05, cores = 1, mzDiff = 0.5)
 }
 \arguments{
 \item{sweeperObj}{- sweeper object containing ms2 data for each matched

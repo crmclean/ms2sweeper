@@ -22,8 +22,13 @@
 #'
 #' @return the sweeper object with the pureMS2 slot filled.
 #' @export
-alignMS2s <- function(sweeperObj, ppm = 5, betweenSampThresh = 0.05,
-                      poisThresh = 0.05, cores = 1, mzDiff = 0.15) {
+alignMS2s <- function(sweeperObj, ppm = 5, betweenSampThresh = 0.15,
+                      poisThresh = 0.05, cores = 1, mzDiff = 0.5) {
+
+
+    geomean <- function(x, na.rm=TRUE) {
+        exp(sum(log(x[x > 0]), na.rm=na.rm) / length(x))
+    }
 
     parents <- getHarvestParents(sweeperObj)
     daughters <- getHarvestDaughters(sweeperObj)
@@ -56,9 +61,24 @@ alignMS2s <- function(sweeperObj, ppm = 5, betweenSampThresh = 0.05,
     ## this part of the algo could be written in parallel
     xx <- allParents %>% split(f = allParents$groupIndex)
 
+
+    # Fixing things that only occour once -------------------------------------
+    orig <- groupCounter
+    zeroList <- xx[[1]] %>% split(f = paste(xx[[1]]$family, xx[[1]]$sample))
+    for(i in seq_along(zeroList)) {
+
+        zeroList[[i]]$groupIndex <- groupCounter
+        groupCounter <- groupCounter + 1
+    }
+
+    xx[orig:(groupCounter-1)] <- zeroList
+    xx <- xx[-1]
+    rm(zeroList, orig)
+
     doMC::registerDoMC(cores)
     allMS2s <- foreach::foreach(i = seq_along(xx)) %dopar% {
 
+        message(i)
         storeMS2s <- list()
         ms2Counter <- 1
 
@@ -69,7 +89,7 @@ alignMS2s <- function(sweeperObj, ppm = 5, betweenSampThresh = 0.05,
                                  sep = "_")
 
         sampleGroups <- curGroup %>% split(f = curGroup$scanId)
-        minScanTime <- sampleGroups %>% sapply(function(x) {min(x$scanTime)})
+        minScanTime <- sampleGroups %>% sapply(function(x) {min(x$rt)})
         sampleGroups <- sampleGroups[order(minScanTime)]
         rm(minScanTime)
 
@@ -84,48 +104,78 @@ alignMS2s <- function(sweeperObj, ppm = 5, betweenSampThresh = 0.05,
         ## merging ms2 data across samples
         concensusMS2s <- pureDaughters(ms2Matches, mzDiff)
 
-        ## computing properties about the parent
-        parInts <- sampleGroups %>%
-            sapply(function(x) {sum(x$intensity)})
-
-        parMz <- sampleGroups %>%
-            sapply(function(x) {mean(x$mzs)})
-
-        parRt <- sampleGroups %>%
-            sapply(function(x) {mean(x$scanTime)})
-
-        meanParPur <- sampleGroups %>%
-            sapply(function(x) {mean(x$purity)})
-
-        parProbs <- parInts*meanParPur/sum(parInts * meanParPur)
-
-        ## cleaning up features with some stats
+        # Bayesian prob test ------------------------------------------------------
         for(j in seq_along(concensusMS2s)) {
 
             curMS2 <- concensusMS2s[[j]]
-            if(is.character(curMS2$parent)) {
-                parents <- curMS2$parent %>% sapply(strsplit, split = ";")
-                uniqueParents <- unlist(parents) %>% unique() %>% as.numeric()
-                keepPeaks <- parents %>%
-                    sapply(function(x) {
-                        sum(parProbs[as.numeric(x)])
-                    }) > betweenSampThresh
 
-                curMS2 <- curMS2[keepPeaks,]
+            if(any(grepl(curMS2$parent, pattern = ";"))) {
+                curPars <- unique(unlist(strsplit(curMS2$parent, ";")))
+                curPars <- as.numeric(curPars)
             } else {
-                uniqueParents <- curMS2$parent %>% unique()
+                curPars <- as.numeric(unique(curMS2$parent))
             }
 
-            keepPois <- stats::ppois(curMS2$size, mean(curMS2$size)) > poisThresh
-            curMS2 <- curMS2[keepPois,]
 
-            curMS2$parentMz <- mean(parMz[uniqueParents])
-            curMS2$parentMzSd <- stats::sd(parMz[uniqueParents])
-            curMS2$parentRt <- mean(parRt[uniqueParents])
-            curMS2$parentRtSd <- stats::sd(parRt[uniqueParents])
+            parPurity <- sampleGroups[curPars] %>%
+                sapply(function(x) {mean(x$purity)})
 
-            storeMS2s[[ms2Counter]] <- curMS2
-            ms2Counter <- ms2Counter + 1
+            parIntensity <- sampleGroups[curPars] %>%
+                sapply(function(x) {mean(x$intensity)})
+
+            parMz <- sampleGroups[curPars] %>%
+                sapply(function(x) {mean(x$mzs)})
+
+            parRt <- sampleGroups[curPars] %>%
+                sapply(function(x) {mean(x$rt)})
+
+            parProbs <- parIntensity*parPurity/sum(parIntensity * parPurity)
+
+            curMS2$probabilty <- 0
+            curMS2$peakScore <- 0
+            geoMeanInts <- curMS2$intMeanDau/geomean(curMS2$intMeanDau)
+            peakProbs <- 1/(1+1/geoMeanInts)
+
+            ## doing bayesian stuff here
+            for(kk in 1:nrow(curMS2)) {
+
+                curRow <- curMS2$parent[kk]
+                curPeakProb <- peakProbs[kk]
+                if(any(grepl(";", curRow))) {
+                    peakOrigs <- as.numeric(unlist(strsplit(curRow, ";")))
+                } else {
+                    peakOrigs <- as.numeric(curRow)
+                }
+
+                checkPars <- which(curPars %in% peakOrigs)
+
+                curProb <- sum(parProbs[checkPars])
+                curMS2$probabilty[kk] <- curProb*curPeakProb/(
+                    curProb*curPeakProb + (1-curProb)*(1-curPeakProb))
+                curMS2$peakScore[kk] <- sum((parIntensity*parPurity)[checkPars]) *
+                    curMS2$size[kk]
+
+            }
+
+            cleanMs2 <- curMS2[curMS2$probabilty > betweenSampThresh,]
+
+            ## doing poisson stuff here
+            if(sum(cleanMs2$size > 1) > 1) {
+                expectedValue <- mean(cleanMs2$size[cleanMs2$size > 1])
+                keepPois <- ppois(q = cleanMs2$size, lambda = expectedValue) > poisThresh
+                cleanMs2 <- cleanMs2[keepPois,]
+            }
+
+            cleanMs2$parMz <- mean(parMz)
+            cleanMs2$parMzSd <- sd(parMz)
+            cleanMs2$parRt <- mean(parRt)
+            cleanMs2$parRtSd <- sd(parRt)
+
+            if(nrow(cleanMs2) > 0) {
+                storeMS2s[[ms2Counter]] <- cleanMs2
+                ms2Counter <- ms2Counter + 1
+            }
+
         }
 
         return(storeMS2s)

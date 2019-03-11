@@ -1,7 +1,7 @@
 #' @title pureMs2
 #'
-#' @description This function is designed to return a high confidence MS2 table. It mataches features
-#' that are found within two tables.
+#' @description This function is designed to return a high confidence MS2 table.
+#' It mataches features that are found within two tables.
 #'
 #' @param ms2Matches - a list of all ms2 matches that belong to features
 #' within the error of the input curMz and curRt values.

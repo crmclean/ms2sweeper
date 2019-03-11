@@ -24,10 +24,15 @@ retreiveSpectra <- function(sweeperObj, outputPath) {
     for(i in seq_along(ms2Scans)) {
 
         curMS2 <- ms2Scans[[i]]
+
+        if(!is.data.frame(curMS2)) {
+            next
+        }
+
         if(nrow(curMS2) > 0) {
 
-            parMz <- signif(curMS2$parentMz[1])
-            parRt <- signif(curMS2$parentRt[1])
+            parMz <- signif(curMS2$parMz[1])
+            parRt <- signif(curMS2$parRt[1])
             outTable <- curMS2[,grep("mzMeanDau|intMeanDau", colnames(curMS2))]
             colnames(outTable) <- c("mz", "intensity")
             utils::write.table(paste0(parMz, "_", parRt, "_ms2.txt"),

@@ -21,41 +21,45 @@ knitr::opts_chunk$set(
 ms2sweeper is an R package designed to find and retreive ms/ms spectra within 
 whenever available for a given feature for the analysis of metabolomics data. 
 If multiple scans for a single are available, the program does its best to 
-return the cleanest possible spectra. Through the cleaning processes, noise 
-peaks are removed. 
+return the cleanest possible spectra. 
+
+The cleaning processes is designed to remove noise peaks from spectra that are
+there due to contamination from other peaks being coeluted within the isolation
+window or irreproducible secondary fragments. 
 
 # Installation
 
 To install this package, please type the following command into the R console:
 
 ```{r}
-devtools::install_github("crmclean/ms2sweeper")
-lobDB <- read.csv(here::here("data/lob_db_pos.csv"))
+#devtools::install_github("crmclean/ms2sweeper")
 ```
 
-The installation will hopefully be acccessible through other servers in the 
-future. 
+Hopefully in the future, this package will be distributed through either CRAN or
+Bioconductor. 
 
 # Tutorial
 
-Loading packages required for the tutorial.
+```{r loading content}
+library(ms2sweeper)
 
-```{r}
-ms2Files <- list.files(pattern = ".mzXML")
-frags <- list()
-for(i in 1:length(ms2Files)) {
+metadata <- read.csv("~/MIT/Research/MMETSP_Project/data/MMETSPsequencetrim.2017.2.11.csv",stringsAsFactors = F)
+files <- metadata$File.Name[grep("*. pos \\(Hak\\)",as.character(metadata$Sample.Name),
+                                 ignore.case = T)]
+ms2dir <- "~/MIT/Research/MMETSP_Project/data/2017-12-21/all_ms2"
+ms2Data <- list.files(ms2dir) 
+dataIndex <- sapply(paste0(files, ".mzML"), grep, ms2Data) %>% unlist()
+ms2Paths <- file.path(ms2dir, ms2Data[dataIndex])
+features <- read.csv(here::here("lipid_table.csv"))    
 
-    suppressMessages(theFragments <- suppressMessages(xcms::xcmsSet(ms2Files[i],
-                                                                    method="MS1") %>%
-                                                          xcms::xcmsFragments()))
-    frags[[i]] <- as.data.frame(theFragments@peaks)
-}
-
+outpath <- here::here("data/sweeperTest")
 ```
 
-```{r}
-temp <- data.frame(frags[[6]])
-temp$msLevel %>% unique()
+```{r running sweeper}
+sweeper <- ms2sweeper::createSweeper(features, ms2Path = ms2Paths)
+sweeper <- ms2sweeper::harvestMS2(sweeperObj = sweeper)
+temp <- alignMS2s(sweeperObj = sweeper, mzDiff = 0.1)
+retreiveSpectra(sweeperObj = temp, outputPath = outpath)
 ```
 
 

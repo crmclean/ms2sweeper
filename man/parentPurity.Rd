@@ -5,7 +5,7 @@
 \title{parentPurity}
 \usage{
 parentPurity(sampleData, curMz, parentMatches, allMasses, allIntensities,
-  scanTimes, ppm, isoWindow, scanInterval)
+  scanTimes, ppm, isoWindow)
 }
 \arguments{
 \item{sampleData}{- current sample of MS2 data being looked at.}
@@ -23,8 +23,6 @@ parentPurity(sampleData, curMz, parentMatches, allMasses, allIntensities,
 \item{ppm}{- mass error}
 
 \item{isoWindow}{- a measure in dalton of the isolation error from the instrument}
-
-\item{scanInterval}{- dynamic exclusion isolation window.}
 }
 \value{
 List of parent m/z matches over time for each feature along with their purity.

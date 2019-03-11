@@ -11,6 +11,8 @@
 #' MS2 element for a common feature.
 #'
 #' @return A list of MS2s that belong to the matched feature within a sample.
+#'
+#' @export
 extractMs2Spectra <- function(parentMatches, sampleData) {
 
     ms2obs <- ms2Info(sampleData)

@@ -5,7 +5,7 @@
 \title{harvestMS2}
 \usage{
 harvestMS2(sweeperObj, ppm = 5, rtError = 15, isoWindow = 2,
-  scanInterval = 7, cores = 3, clearData = TRUE, mzDiff = 0.5)
+  cores = 3, clearData = TRUE, mzDiff = 0.5)
 }
 \arguments{
 \item{sweeperObj}{- object containing all MS2 data that will be mined.}
@@ -16,8 +16,6 @@ harvestMS2(sweeperObj, ppm = 5, rtError = 15, isoWindow = 2,
 from XCMS and those from the MS2 fragment table.}
 
 \item{isoWindow}{- isolation window for MS2s}
-
-\item{scanInterval}{- Dynamic exclusion time. Usefull when matching MS2s}
 
 \item{cores}{- number of cores to use during harvest function.}
 

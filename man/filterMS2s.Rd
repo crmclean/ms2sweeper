@@ -4,7 +4,8 @@
 \alias{filterMS2s}
 \title{filterMS2s}
 \usage{
-filterMS2s(sweeperObj, minScanCount = 0, minIntensity = 10)
+filterMS2s(sweeperObj, minScanCount = 0, minIntensity = 10,
+  minScanScore = 10)
 }
 \arguments{
 \item{sweeperObj}{- Sweeper Object containing MS2 spectra.}
@@ -12,6 +13,8 @@ filterMS2s(sweeperObj, minScanCount = 0, minIntensity = 10)
 \item{minScanCount}{- Minimum number of scan containing a peak.}
 
 \item{minIntensity}{- Minimum intensity value required to retain a peak.}
+
+\item{minScanScore}{- Minimum possible scan score to retain.}
 }
 \value{
 returns the sweeperObj with the filttered ms2 spectra by the

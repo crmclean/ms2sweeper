@@ -2,9 +2,11 @@
 
 export(alignMS2s)
 export(createSweeper)
+export(extractMs2Spectra)
 export(filterMS2s)
 export(harvestMS2)
 export(retreiveSpectra)
+export(summarizeMs2s)
 exportClasses(sweeperObj)
 importFrom(dplyr,"%>%")
 importFrom(foreach,"%dopar%")
