@@ -31,6 +31,11 @@ alignMS2s <- function(sweeperObj, ppm = 5, betweenSampThresh = 0.15,
     }
 
     parents <- getHarvestParents(sweeperObj)
+
+    if(length(parents) == 0) {
+        stop("Make sure you run HarvestMs2 Function before alignMS2s function.")
+    }
+
     daughters <- getHarvestDaughters(sweeperObj)
     names(daughters) <- daughters %>% lapply(function(x) {as.character(x$sample[1])})
 
@@ -123,6 +128,10 @@ alignMS2s <- function(sweeperObj, ppm = 5, betweenSampThresh = 0.15,
             parIntensity <- sampleGroups[curPars] %>%
                 sapply(function(x) {mean(x$intensity)})
 
+            if(any(is.na(parIntensity))) {
+                next
+            }
+
             parMz <- sampleGroups[curPars] %>%
                 sapply(function(x) {mean(x$mzs)})
 
@@ -188,3 +197,4 @@ alignMS2s <- function(sweeperObj, ppm = 5, betweenSampThresh = 0.15,
     return(sweeperObj)
 
 }
+

@@ -57,23 +57,9 @@ outpath <- here::here("data/sweeperTest")
 
 ```{r running sweeper}
 sweeper <- ms2sweeper::createSweeper(features, ms2Path = ms2Paths)
-sweeper <- ms2sweeper::harvestMS2(sweeperObj = sweeper)
+sweeper <- ms2sweeper::harvestMS2(sweeperObj = sweeper, clearData = FALSE)
 temp <- alignMS2s(sweeperObj = sweeper, mzDiff = 0.1)
 retreiveSpectra(sweeperObj = temp, outputPath = outpath)
-```
-
-
-```{r}
-path <- "~/Desktop/forCraigPooledNegInternalMetabolitesEnvironmental/"
-ms2Files <- list.files(path, pattern = ".mzML")
-frags <- list()
-for(i in 1:length(ms2Files)) {
-
-    suppressMessages(theFragments <- suppressMessages(xcms::xcmsSet(file.path(path, ms2Files[i]),
-                                                                    method="MS1") %>%
-                                                          xcms::xcmsFragments()))
-    frags[[i]] <- theFragments@peaks
-}
 ```
 
 Loading content needed to check for MS2 data.

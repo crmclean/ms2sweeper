@@ -150,8 +150,8 @@ setMs2Data <- function(sweeperObj) {
     fragmentation_list <- list()
     ms2Files <- getMs2Path(sweeperObj)
     length(fragmentation_list) <- length(ms2Files)
-    for(i in seq_along(files)) {
-        theFragments <- suppressMessages(xcms::xcmsSet(ms2Files[i],
+    for(i in seq_along(ms2Files)) {
+        theFragments <- suppressMessages(xcms::xcmsSet(files = ms2Files[i],
                                                             method="MS1") %>%
                              xcmsFragments(., snthresh = 1))
         fragmentation_list[[i]] <- data.frame(theFragments@peaks,
