@@ -22,8 +22,10 @@
 #'
 #' @return the sweeper object with the pureMS2 slot filled.
 #' @export
-alignMS2s <- function(sweeperObj, ppm = 5, betweenSampThresh = 0.15,
-                      poisThresh = 0.05, cores = 1, mzDiff = 0.5) {
+alignMS2s <- function(sweeperObj, ppm = 5,
+                      betweenSampThresh = 0.15,
+                      poisThresh = 0.05,
+                      cores = 1, mzDiff = 0.5) {
 
 
     geomean <- function(x, na.rm=TRUE) {
@@ -80,7 +82,8 @@ alignMS2s <- function(sweeperObj, ppm = 5, betweenSampThresh = 0.15,
     xx <- xx[-1]
     rm(zeroList, orig)
 
-    doMC::registerDoMC(cores)
+    cl <- makeCluster(cores)
+    doParallel::registerDoParallel(cl)
     allMS2s <- foreach::foreach(i = seq_along(xx)) %dopar% {
 
         message(i)

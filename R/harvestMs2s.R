@@ -36,7 +36,9 @@ harvestMS2 <- function(sweeperObj, ppm = 5, rtError = 15,
     features <- getFreatures(sweeperObj)
 
     # Looping through samples -------------------------------------------------
-    doMC::registerDoMC(cores)
+
+    cl <- parallel::makeCluster(cores)
+    doParallel::registerDoParallel(cl)
     sampData <- foreach::foreach(i = seq_along(allMs2s)) %dopar% {
 
         message(paste("Currently on sample:", i))
